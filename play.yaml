@@ -1,0 +1,40 @@
+- name: Installing Moodle and its Dependencies
+  hosts: all
+  become: true
+  become_user: root
+  gather_facts: true
+  tasks:
+    - name: Download and Extract moodle
+      unarchive:
+        src: https://download.moodle.org/download.php/direct/stable36/moodle-3.6.2.tgz
+        dest: /var/www/html
+        remote_src: yes
+
+    - name: install dependencies
+      apt:
+        name:  "{{ item }}"
+        state: present
+      loop:
+        - libapache2-mod-php 
+        - mysql-server 
+        - php-mysql 
+        - php-gd 
+        - php-intl 
+        - php-xmlrpc 
+        - php-soap 
+        - php-cli 
+        - php-zip 
+        - php-mbstring 
+        - php-curl 
+        - php-xml 
+        - php-pear 
+        - php-bcmath 
+        - php-fpm
+
+    - name: Creating Moodle Directory
+      file:
+        path: /var/www/html/moodledata
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: 0775
